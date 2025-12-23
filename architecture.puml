@@ -1,0 +1,54 @@
+@startuml eda_architecture
+title Event-Driven PG Architecture
+
+skinparam monochrome false
+skinparam shadow false
+skinparam defaultFontName Helvetica
+skinparam linetype ortho
+skinparam nodesep 100
+skinparam ranksep 100
+
+' Define Colors matching the reference image'
+skinparam rectangle {
+    BackgroundColor<<Command>> LightBlue
+    BackgroundColor<<Query>> LightGreen
+    BorderColor Gray
+    RoundCorner 10
+}
+skinparam database {
+    BackgroundColor LightBlue
+    BackgroundColor<<Read>> LightGreen
+    BorderColor Gray
+}
+skinparam actor {
+    BackgroundColor White
+    BorderColor Gray
+}
+
+' System Boundary
+rectangle "Event Driven System (Docker Compose)" as System #White;line.dashed {
+
+    ' Database Section
+    rectangle "PostgreSQL" as PG_Rect #Transparent;line.dotted {
+        database "Orders\nTable" as DB <<Query>>
+        rectangle "Trigger\n(notify_new_order)" as Trigger <<Command>>
+    }
+
+    ' Listener Section
+    rectangle "Go Listener Service" as ListenerService #Transparent;line.dotted {
+         rectangle "Listener\n(pq library)" as Listener <<Command>>
+         rectangle "Logic\n(Process Event)" as Logic <<Command>>
+    }
+
+    ' Relationships
+    DB -down-> Trigger : After INSERT
+    Trigger -down-> Listener : NOTIFY 'new_order'\n(JSON Payload)
+    Listener -right-> Logic : Handle Event
+}
+
+' Client outside
+rectangle "Client\n(App/Script)" as Client #White
+
+Client -right-> DB : SQL INSERT
+
+@enduml
