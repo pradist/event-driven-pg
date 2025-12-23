@@ -13,8 +13,8 @@ This project demonstrates how to build an Event-Driven Architecture (EDA) using 
 
 ## 📋 Prerequisites
 
-- **Podman:** For container management.
-- **Podman Compose:** For managing multi-container applications.
+- **Container Engine:** Docker or Podman.
+- **Compose:** Docker Compose or Podman Compose.
 - **Go (Optional):** For developing the Listener Service (the Dockerfile handles the build automatically).
 - **make:** For running simple commands (Unix/Linux/macOS).
 
